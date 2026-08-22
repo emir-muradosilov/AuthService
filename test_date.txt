@@ -1,0 +1,20 @@
+{
+  "user_name": "test",
+  "second_name": "User",
+  "patronymic": null,
+  "email": "test@example.com",
+  "password": "password123",
+  "password_confirm": "password123"
+}
+
+
+
+{
+  "user_name": "test1",
+  "second_name": "User1",
+  "patronymic": null,
+  "email": "test1@example.com",
+  "password": "password123",
+  "password_confirm": "password123"
+}
+
