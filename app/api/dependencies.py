@@ -22,7 +22,6 @@ security = HTTPBearer()
 
 async def get_current_user(
         credentials: HTTPAuthorizationCredentials = Depends(security),
-#        token: Annotated[str, Depends(security)],
         db: AsyncSession = Depends(async_get_db),
 ):
     repo = UserRepository(db)
@@ -51,6 +50,7 @@ def require_permission(codename: str):
     ):
         # Получаем права пользователя через его роль
         # Если у пользователя нет роли или нет нужного права — raise 403
+        
         if not current_user.role:
             raise HTTPException(status_code=403, detail="No role assigned")
         

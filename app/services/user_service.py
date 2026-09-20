@@ -2,6 +2,7 @@
 from app.repositories.user_repository import UserRepository
 from app.schemas.users import UserCreate, UserLogin, UserUpdate, UserResponse
 from app.core.security import hash_password, verify_password, create_login_token
+from app.repositories.role_repository import RoleRepository 
 
 
 class UserService:
@@ -29,6 +30,16 @@ class UserService:
         user_dict['password_hash'] = hashed_password
 
         result = await self.repo.create(user_data = user_dict)
+
+        if result:
+            role_repo = RoleRepository(self.repo.db)  # или получи доступ к сессии через self.repo.db
+            user_role = await role_repo.get_by_name("user")
+            if user_role:
+                result.role_id = user_role.id
+                await self.repo.db.commit()
+                await self.repo.db.refresh(result)
+
+
 
         return result
 

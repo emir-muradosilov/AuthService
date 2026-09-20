@@ -103,6 +103,7 @@ async def assign_role_to_user(
     # Проверить, что пользователь и роль существуют
     user_repo = UserRepository(db)
     user = await user_repo.get_by_id(user_id)
+    
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     role_repo = RoleRepository(db)

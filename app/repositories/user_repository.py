@@ -5,19 +5,29 @@ from sqlalchemy import  select, delete, update
 
 from app.schemas.users import UserUpdate
 
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+
+
 class UserRepository:
 
     def __init__(self, db:AsyncSession):
         self.db = db
 
     async def get_by_email(self, email: str) -> Users | None:
-        stmt = select(Users).where(Users.email == email)
+        stmt = select(Users).where(Users.email == email).options(selectinload(Users.role))
         user = await self.db.scalar(stmt)
         return user
 
 
     async def get_by_id(self, user_id: int) -> Users | None:
         stmt = select(Users).where(Users.id == user_id)
+        user = await self.db.scalar(stmt)
+        return user
+
+
+    async def get_by_name(self, user_name: str) -> Users | None:
+        stmt = select(Users).where(Users.user_name == user_name)
         user = await self.db.scalar(stmt)
         return user
 

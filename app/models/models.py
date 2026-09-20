@@ -1,7 +1,7 @@
 from app.db.dbsession import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
-from sqlalchemy import func, ForeignKey
+from sqlalchemy import func, ForeignKey, text
 
 
 # Пользователи
@@ -19,6 +19,7 @@ class Users(Base):
 
     role_id : Mapped[int] = mapped_column(ForeignKey('role.id', ondelete='SET NULL' ), nullable=True)
     role = relationship('Role', back_populates='users')
+    posts = relationship('Post', back_populates='author')
 
 
 # Роли
@@ -51,5 +52,14 @@ class RolePermissions(Base):
 
 
 
+class Post(Base):
+    __tablename__ = 'post'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title:Mapped[str] = mapped_column()
+    text : Mapped[str] = mapped_column()
+    author_id : Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
+    created_at : Mapped[datetime] = mapped_column(server_default=func.now(), nullable=False)
+    updated_at : Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now(), nullable=False,)
 
+    author = relationship('Users', back_populates='posts')
 

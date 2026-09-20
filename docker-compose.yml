@@ -1,0 +1,48 @@
+
+services:
+  fastapi-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: fastapi-project:latest
+    container_name: fastapi_conteiner
+    ports:
+    - "8085:8085"
+
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    restart: always
+
+  postgres_db:
+    image: postgres:15
+    container_name: postgres_conteiner
+
+    env_file:
+      - .env.docker
+
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+    ports:
+    - "5432:5432"
+
+    volumes:
+      - postges-date:/var/lib/postgresql/data
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5s
+    restart: always
+
+  volumes:
+    postgrs_data:
+
+
+
+
