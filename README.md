@@ -1,56 +1,133 @@
 
-Структура базы данных:
-Таблица пользователей - users:
-id - primary key
-user_name - CharField
-secondname - CharField
-patronymic - CharField
-email - CharField
-password_hash - Password
-is_active - bool
-created_at - datetime
-updated_at - datetime
+🔐 AuthService
+
+Микросервис для регистрации пользователей и гибкого управления правами доступа на основе ролевой модели (RBAC).
+
+📋 Оглавление
+
+• Основные возможности
+• Архитектура базы данных
+• Стек технологий
+• Структура проекта
+• Быстрый старт
+• Миграции базы данных
+
+✨ Основные возможности
+
+• Регистрация и управление профилями: хранение ФИО, email, хеша пароля и статуса активности учетной записи.
+• Гибкая система ролей (RBAC): создание произвольных ролей и привязка их к пользователям.
+• Гранулярные права доступа (Permissions): управление доступом на уровне конкретных действий над сущностями в формате объект:действие (например, questions:create, questions:delete, questions:update, questions:archive).
+
+🗄 Архитектура базы данных
+
+Схема данных построена вокруг четырех основных таблиц:
+
+1. users — Пользователи
+
+Хранит учетные записи зарегистрированных пользователей.
+
+Поле	Тип	Описание
+id
+	Primary Key	Уникальный идентификатор пользователя
+user_name
+	CharField	Имя пользователя
+secondname
+	CharField	Фамилия
+patronymic
+	CharField	Отчество
+email
+	CharField	Электронная почта
+password_hash
+	Password	Захешированный пароль
+is_active
+	Boolean	Флаг активности аккаунта
+created_at
+	DateTime	Дата и время создания записи
+updated_at
+	DateTime	Дата и время последнего обновления
 
 
-Таблица roles 
-id - primary key
-role_name - CharField
+2. roles — Роли пользователей
+
+Определяет типы и роли пользователей в системе.
+
+Поле	Тип	Описание
+id
+	Primary Key	Уникальный идентификатор роли
+role_name
+	CharField	Название роли
 
 
-Таблица прав пользователей - permissions
-id - primary key
-codename - CharField (Пример - user:create)
-description - CharField (Описание доступа)
+3. permissions — Права доступа
+
+Справочник всех возможных действий в системе по отношению к объектам.
+
+Поле	Тип	Описание
+id
+	Primary Key	Уникальный идентификатор права
+codename
+	CharField	Кодовое имя права (например, user:create или questions:archive)
+description
+	CharField	Человекочитаемое описание доступа
 
 
-Таблица прав пользователей - role_permissions
-id - primary key
-role_id - foreign key(roles.id)
-permission_id - foreign key(permissions.id)
+4. role_permissions — Связь ролей и прав
+
+Связующая таблица (Many-to-Many) для назначения набора прав конкретной роли.
+
+Поле	Тип	Описание
+id
+	Primary Key	Уникальный идентификатор связи
+role_id
+	Foreign Key	Ссылка на roles.id
+permission_id
+	Foreign Key	Ссылка на permissions.id
 
 
+🛠 Стек технологий
 
-Регистрация пользователей в таблице users.
-В таблице - roles, создаются типы пользователей/ роли пользователей.
-В таблице permissions - создается список всех возможных действий в системе по отношению к объекту. Например есть объект Вопрос (Questions) и есть возможные действия с ним: создать, удалить, изменить, поместить в архив.  
-т.е. questions:create, questions:delete, questions:update, questions:archive
+• Язык: Python
+• Миграции БД: Alembic
+• Контейнеризация: Docker, Docker Compose
 
-В таблице role_permissions - связываются права пользователей с их ролью.
+📂 Структура проекта
+
+text
+AuthService/
+├── alembic/             # Файлы миграций базы данных
+├── app/                 # Основной исходный код приложения
+├── .dockerignore        # Исключения для сборки Docker-образа
+├── .env                 # Переменные окружения
+├── .gitignore           # Исключения для Git
+├── Dockerfile           # Инструкции для сборки контейнера
+├── alembic.ini          # Конфигурация Alembic
+├── docker-compose.yml   # Оркестрация сервисов
+├── main.py              # Точка входа в приложение
+└── README.md            # Документация проекта
+Используйте код с осторожностью.
+
+🚀 Быстрый старт
 
 
+Запуск через Docker Compose (рекомендуется)
 
+1. Клонируйте репозиторий:bash
+git clone https://github.com/emir-muradosilov/AuthService.git
+cd AuthService
+Используйте код с осторожностью.
+2. Настройте переменные окружения:
+Убедитесь, что файл .env содержит актуальные параметры подключения к базе данных и секретные ключи.
+3. Запустите контейнеры:bash
+docker-compose up -d --build
+Используйте код с осторожностью.
 
+🔄 Миграции базы данных
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+Для применения актуальных миграций внутри запущенного контейнера выполните:
+bash
+docker-compose exec app alembic upgrade head
+Используйте код с осторожностью.
+Для создания новой миграции после изменения моделей:
+bash
+docker-compose exec app alembic revision --autogenerate -m "Описание изменений"
+Используйте код с осторожностью.
